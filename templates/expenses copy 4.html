@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניהול הוצאות</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #f9f9f9;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 18px;
+            padding: 16px;
+            margin: 20px;
+            width: 80%;
+            max-width: 600px;
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            font-family: 'SimplerProAlte', sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .progress-bar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .progress-bar {
+            position: relative;
+            background: #ffefc3; /* Default background */
+            border-radius: 25px;
+            width: 97%;
+            height: 20px;
+            margin: 0 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        .progress-bar-inner {
+            position: absolute;
+            background: #ffcf03; /* Default background */
+            height: 100%;
+            border-radius: 25px;
+        }
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .progress-label {
+            font-family: 'SimplerPro', sans-serif;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0px 10px;
+        }
+        .expand-arrow {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .expand-arrow.rotate {
+            transform: rotate(180deg);
+        }
+        .expand-arrow2 {
+            width: 14px;
+            height: 14px;
+            vertical-align: middle;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .expand-arrow2.rotate {
+            transform: rotate(180deg);
+        }
+        .footer {
+            font-family: 'SimplerPro', sans-serif;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #202125;
+            font-weight: bold;
+            border-top: 1px solid #ccc;
+            line-height: 60px;
+            position: relative;
+            padding: 0px 20px;
+        }
+        .amount-spent {
+            font-family: 'SimplerPro', sans-serif;
+            font-size: 18px;
+            color: #ffcf03; /* Default color */
+            font-weight: bold;
+            line-height: 40px;
+            padding: 0px 10px;
+        }
+        .amount-recommended {
+            font-family: 'SimplerPro', sans-serif;
+            font-size: 18px;
+            color: #202125;
+            line-height: 40px;
+            padding: 0px 10px;
+        }
+        .total-expenses {
+            font-family: 'SimplerPro', sans-serif;
+            font-size: 24px;
+            color: #ff653f;
+            font-weight: bold;
+            line-height: 40px;
+        }
+        .details {
+            font-family: 'SimplerPro', sans-serif;
+            height: 0;
+            overflow: hidden;
+            transition: height 0.3s ease;
+            width: 100%;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .details.visible {
+            height: auto;
+        }
+
+        .details-content {
+            padding: 16px;
+            background-color: #f9f9f9;
+        }
+
+        .actions-details {
+            display: block;
+            height: 0;
+            overflow: hidden;
+            transition: height 0.3s ease;
+            width: 100%;
+            padding-top: 0;
+            background-color: white;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .actions-details.visible {
+            height: auto;
+        }
+
+        .actions-details-content {
+            padding: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 0px;
+            text-align: center;
+        }
+        th {
+            background-color: #f9f9f9;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .over-budget {
+            font-family: 'SimplerPro', sans-serif;
+            font-size: 14px;
+            color: #ff0000;
+            font-weight: bold;
+            text-align: left;
+            padding: 5px 0;
+        }
+
+        /* Media queries for mobile devices */
+        @media only screen and (max-width: 600px) {
+            body {
+                padding: 10px 35px;
+            }
+            .card {
+                width: 100%;
+                margin: 10px 0;
+                padding: 10px;
+            }
+            .card-header {
+                font-size: 25px;
+                padding: 10px;
+            }
+            .progress-label {
+                font-size: 14px;
+            }
+            .amount-spent {
+                font-size: 24px;
+            }
+            .amount-recommended {
+                font-size: 24px;
+            }
+            .footer {
+                flex-direction: column;
+                line-height: 40px;
+            }
+
+            .actions-details {
+                padding: 0;
+                margin: 0;
+            }
+            .actions-details-content {
+                padding: 0;
+            }
+            .actions-details table {
+                width: 100%;
+                font-size: 16px;
+            }
+            .actions-details td, .actions-details th {
+                padding: 10px;
+            }
+
+    </style>
+    <script>
+        function toggleDetails(id) {
+            const details = document.getElementById(id);
+            const arrow = document.getElementById('arrow-' + id);
+            const card = details.parentElement;
+            const footer = card.querySelector('.footer');
+
+            if (details.classList.contains('visible')) {
+                details.style.height = details.scrollHeight + 'px';
+                requestAnimationFrame(() => {
+                    details.style.height = '0';
+                    details.classList.remove('visible');
+                    arrow.classList.remove('rotate');
+                    footer.style.boxShadow = 'none';
+                });
+
+                details.addEventListener('transitionend', function() {
+                    if (!details.classList.contains('visible')) {
+                        details.style.height = null;
+                    }
+                }, { once: true });
+
+                const actionDetailsElements = details.querySelectorAll('.actions-details');
+                actionDetailsElements.forEach(element => {
+                    element.classList.remove('visible');
+                    const actionArrow = document.getElementById('arrow2-' + element.id);
+                    if (actionArrow) {
+                        actionArrow.classList.remove('rotate');
+                    }
+                });
+            } else {
+                details.style.height = details.scrollHeight + 'px';
+                details.classList.add('visible');
+                arrow.classList.add('rotate');
+                footer.style.boxShadow = '0 4px 7px rgba(0, 0, 0, 0.15)';
+
+                details.addEventListener('transitionend', function() {
+                    if (details.classList.contains('visible')) {
+                        details.style.height = 'auto';
+                    }
+                }, { once: true });
+            }
+        }
+
+        function toggleActionsDetails(id) {
+            const actionsDetails = document.getElementById(id);
+            const arrow = document.getElementById('arrow2-' + id);
+
+            if (actionsDetails.classList.contains('visible')) {
+                actionsDetails.style.height = actionsDetails.scrollHeight + 'px';
+                requestAnimationFrame(() => {
+                    actionsDetails.style.height = '0';
+                    actionsDetails.classList.remove('visible');
+                    arrow.classList.remove('rotate');
+                });
+
+                actionsDetails.addEventListener('transitionend', function() {
+                    if (!actionsDetails.classList.contains('visible')) {
+                        actionsDetails.style.height = null;
+                    }
+                }, { once: true });
+            } else {
+                actionsDetails.style.height = actionsDetails.scrollHeight + 'px';
+                actionsDetails.classList.add('visible');
+                arrow.classList.add('rotate');
+
+                actionsDetails.addEventListener('transitionend', function() {
+                    if (actionsDetails.classList.contains('visible')) {
+                        actionsDetails.style.height = 'auto';
+                    }
+                }, { once: true });
+            }
+        }
+    </script>
+</head>
+<body>
+    {% for item in data %}
+        {% if item.category == 'הוצאות משתנות' %}
+            <div class="card">
+                <div style="text-align: center;" class="card-header">{{ month_to_display }}</div>
+                <div style="font-size: 18px;" class="card-header">סך כל ההוצאות עד עכשיו</div>
+                <div class="total-expenses">{{ format(total_expenses) }} ₪</div>
+            </div>
+        {% endif %}
+    <div class="card">
+        <div class="card-header">{{ item.category }}</div>
+        <div class="progress-labels">
+            <div class="progress-label">
+                <div>{% if item.category == 'הכנסות' %}נכנס{% else %}יצא{% endif %}</div>
+            </div>
+            <div class="progress-label">
+                <div>{% if item.category == 'הוצאות משתנות' %}מומלץ להוציא עד{% elif item.category == 'הכנסות' %}צפוי להיכנס{% else %}צפוי לצאת{% endif %}</div>
+            </div>
+        </div>
+        <div class="progress-labels">
+            <div class="amount-spent" style="color: {% if item.category in ['סופר', 'דלק', 'אוכל בחוץ'] %}#5d7afd{% elif item.category == 'הוצאות קבועות' %}#f34f8a{% elif item.category == 'הכנסות' %}#00c070{% else %}#ffcf03{% endif %};">
+                {% if sum(item.spent.values()) > item.recommended %}
+                    <img src="/static/exclemation-mark-blue.svg" alt="Exclamation Mark" style="width: 18px; height: 18px; vertical-align: middle; margin-left: 5px;">
+                {% endif %}
+                {{ format(sum(item.spent.values())) }} ₪
+            </div>
+            <div class="amount-recommended">{% if item.category == 'הוצאות משתנות' %}{{ format(variable_amount_to_spent) }} ₪{% else %}{{ format(item.recommended) }} ₪{% endif %}</div>
+        </div>
+        <div class="progress-bar" style="background: {% if item.category in ['סופר', 'דלק', 'אוכל בחוץ'] %}#dce8f6{% elif item.category == 'הוצאות קבועות' %}#feeef1{% elif item.category == 'הכנסות' %}#e8f4ba{% else %}#ffefc3{% endif %};">
+            <div class="progress-bar-inner" style="background: {% if item.category in ['סופר', 'דלק', 'אוכל בחוץ'] %}#5d7afd{% elif item.category == 'הוצאות קבועות' %}#f34f8a{% elif item.category == 'הכנסות' %}#00c070{% else %}#ffcf03{% endif %}; width: {{ item.percentage_spent }}%;"></div>
+        </div>
+        {% if sum(item.spent.values()) > item.recommended %}
+            <div class="over-budget">חריגה של {{ round(sum(item.spent.values()) - item.recommended, 1) }} ₪</div>
+        {% endif %}
+        <div class="footer" onclick="toggleDetails('details-{{ loop.index }}')">
+            <div>פירוט שבועי</div>
+            <img id="arrow-details-{{ loop.index }}" src="/static/expand-arrow-down-medium.svg" class="expand-arrow" alt="Expand Arrow">
+        </div>
+        <div class="details" id="details-{{ loop.index }}">
+            <div class="details-content">
+                <table>
+                    <thead class="details-header">
+                        <tr>
+                            <th>{% if item.category not in ['הוצאות קבועות','הכנסות'] %}שבוע{% else %}{% endif %}</th>
+                            <th>{% if item.category != 'הכנסות' %}יצא{% else %} {% endif %}</th>
+                            <th>{% if item.category == 'הוצאות קבועות' %}צפוי להוציא{% elif item.category == 'הכנסות' %} {% else %}נשאר להוציא{% endif %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for week in item.spent.keys() %}
+                        <tr style="border-top: 1px solid #ccc; line-height: 40px;">
+                            <td>{% if item.category not in ['הוצאות קבועות','הכנסות'] %} שבוע {{ week }} {% else %}{{ week }} {% endif %}</td>
+                            <td style="direction: ltr; color: {% if item.category in ['סופר', 'דלק', 'אוכל בחוץ'] %}#5d7afd{% elif item.category == 'הוצאות קבועות' %}#f34f8a{% elif item.category == 'הכנסות' %}#00c070{% else %}#ffcf03{% endif %};">{{ round(item.spent.get(week, 0), 1) }} ₪</td>
+                            <td>{% if item.category != 'הכנסות' %}{{ item.recommended_per_week.get(week, 0) }} ₪{% endif %}</td>
+                            <td><img id="arrow2-details-{{ item.category }}-{{ loop.index }}-{{ week }}" src="/static/expand-arrow-down-medium.svg" class="expand-arrow2" alt="Expand Arrow" onclick="toggleActionsDetails('actions-details-{{ item.category }}-{{ loop.index }}-{{ week }}')"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                                <div class="actions-details" id="actions-details-{{ item.category }}-{{ loop.index }}-{{ week }}">
+                                    <div class="actions-details-content">
+                                        <table>
+                                            <tbody>
+                                                {% for action in item.actions[week].itertuples() %}
+                                                <tr style="line-height: 20px;">
+                                                    <td>
+                                                        <span style="vertical-align: top; font-size: 12px;">{{ action.Date.strftime('%d.%m.%y') }}</span>
+                                                    </td>
+                                                    <td style="text-align: right;">
+                                                        <strong style="direction: ltr; text-align: left; display: inline-block; font-size: 14px;">₪ {{ action.Amount }}</strong>
+                                                        <div style="font-size: 12px;">{{ action.Description }}</div>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+    {% endfor %}
+</body>
+</html>
